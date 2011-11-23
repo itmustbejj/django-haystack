@@ -109,7 +109,7 @@ class SolrSearchBackend(BaseSearchBackend):
     def search(self, query_string, sort_by=None, start_offset=0, end_offset=None,
                fields='', highlight=False, facets=None, date_facets=None, query_facets=None,
                narrow_queries=None, spelling_query=None, within=None,
-               dwithin=None, distance_point=None,
+               dwithin=None, distance_point=None, facet_mincount=None, facet_limit=None, facet_prefix=None,
                limit_to_registered_models=None, result_class=None, **kwargs):
         if len(query_string) == 0:
             return {
@@ -168,6 +168,18 @@ class SolrSearchBackend(BaseSearchBackend):
         if facets is not None:
             kwargs['facet'] = 'on'
             kwargs['facet.field'] = facets
+
+        if facet_mincount is not None:
+            kwargs['facet'] = 'on'
+            kwargs['facet.mincount'] = facet_mincount
+            
+        if facet_limit is not None:
+            kwargs['facet'] = 'on'
+            kwargs['facet.limit'] = facet_limit
+
+        if facet_prefix is not None:
+            kwargs['facet'] = 'on'
+            kwargs['facet.prefix'] = facet_prefix
 
         if date_facets is not None:
             kwargs['facet'] = 'on'
@@ -621,6 +633,15 @@ class SolrSearchQuery(BaseSearchQuery):
         if self.date_facets:
             search_kwargs['date_facets'] = self.date_facets
 
+        if self.facet_mincount:
+            kwargs['facet_mincount'] = self.facet_mincount
+
+        if self.facet_limit:
+            kwargs['facet_limit'] = self.facet_limit
+
+        if self.facet_prefix:
+            kwargs['facet_prefix'] = self.facet_prefix
+            
         if self.query_facets:
             search_kwargs['query_facets'] = self.query_facets
 
