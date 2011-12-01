@@ -291,6 +291,8 @@ class BaseSearchQuery(object):
         self.facet_mincount = None
         self.facet_limit = None
         self.facet_prefix = None
+        self.facet_sort = None
+        self.facet_offset = None
         self.query_facets = []
         self.narrow_queries = set()
         #: If defined, fields should be a list of field names - no other values
@@ -368,6 +370,12 @@ class BaseSearchQuery(object):
 
         if self.facet_prefix:
             kwargs['facet_prefix'] = self.facet_prefix
+
+        if self.facet_sort:
+            kwargs['facet_sort'] = self.facet_sort
+
+        if self.facet_offset:
+            kwargs['facet_offset'] = self.facet_offset
 
         if self.narrow_queries:
             kwargs['narrow_queries'] = self.narrow_queries
@@ -524,7 +532,6 @@ class BaseSearchQuery(object):
         be sent to the backend.
         """
         query = self.query_filter.as_query_string(self.build_query_fragment)
-
         if not query:
             # Match all.
             query = self.matching_all_fragment()
@@ -617,7 +624,6 @@ class BaseSearchQuery(object):
             subtree = True
         else:
             subtree = False
-
         for child in query_filter.children:
             if isinstance(child, tree.Node):
                 self.query_filter.start_subtree(connector)
@@ -648,7 +654,13 @@ class BaseSearchQuery(object):
 
     def set_facet_prefix(self, prefix):
         self.facet_prefix = prefix
-        
+
+    def set_facet_sort(self, sort):
+        self.facet_sort = sort
+
+    def set_facet_offset(self, offset):
+        self.facet_offset = offset
+
     def clear_order_by(self):
         """
         Clears out all ordering that has been already added, reverting the
@@ -850,6 +862,8 @@ class BaseSearchQuery(object):
         clone.facet_mincount = self.facet_mincount
         clone.facet_limit = self.facet_limit
         clone.facet_prefix = self.facet_prefix
+        clone.facet_sort = self.facet_sort
+        clone.facet_offset = self.facet_offset
         clone.narrow_queries = self.narrow_queries.copy()
         clone.start_offset = self.start_offset
         clone.end_offset = self.end_offset

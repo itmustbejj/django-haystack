@@ -106,10 +106,12 @@ class SolrSearchBackend(BaseSearchBackend):
                 self.log.error("Failed to clear Solr index: %s", e)
 
     @log_query
-    def search(self, query_string, sort_by=None, start_offset=0, end_offset=None,
-               fields='', highlight=False, facets=None, date_facets=None, query_facets=None,
-               narrow_queries=None, spelling_query=None, within=None,
-               dwithin=None, distance_point=None, facet_mincount=None, facet_limit=None, facet_prefix=None,
+    def search(self,query_string, sort_by=None, start_offset=0, end_offset=None,
+               fields='', highlight=False, facets=None, date_facets=None,
+               query_facets=None, narrow_queries=None, spelling_query=None, within=None,
+               dwithin=None, distance_point=None,
+               facet_mincount=None, facet_limit=None, facet_prefix=None,
+               facet_sort=None, facet_offset=None,
                limit_to_registered_models=None, result_class=None, **kwargs):
         if len(query_string) == 0:
             return {
@@ -180,6 +182,14 @@ class SolrSearchBackend(BaseSearchBackend):
         if facet_prefix is not None:
             kwargs['facet'] = 'on'
             kwargs['facet.prefix'] = facet_prefix
+
+        if facet_sort is not None:
+            kwargs['facet'] = 'on'
+            kwargs['facet.sort'] = facet_sort
+
+        if facet_offset is not None:
+            kwargs['facet'] = 'on'
+            kwargs['facet.offset'] = facet_offset
 
         if date_facets is not None:
             kwargs['facet'] = 'on'
@@ -254,7 +264,7 @@ class SolrSearchBackend(BaseSearchBackend):
             self.log.error("Failed to query Solr using '%s': %s", query_string, e)
             raw_results = EmptyResults()
 
-        return self._process_results(raw_results, highlight=highlight, result_class=result_class, distance_point=distance_point)
+        return self._process_results(raw_results, highlight=highlight, result_class=result_class)
 
     def more_like_this(self, model_instance, additional_query_string=None,
                        start_offset=0, end_offset=None,
@@ -641,6 +651,12 @@ class SolrSearchQuery(BaseSearchQuery):
 
         if self.facet_prefix:
             kwargs['facet_prefix'] = self.facet_prefix
+            
+        if self.facet_sort:
+            kwargs['facet_sort'] = self.facet_sort
+            
+        if self.facet_offset:
+            kwargs['facet_offset'] = self.facet_offset
             
         if self.query_facets:
             search_kwargs['query_facets'] = self.query_facets
