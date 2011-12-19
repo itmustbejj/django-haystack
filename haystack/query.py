@@ -465,6 +465,26 @@ class SearchQuerySet(object):
 
         return clone
 
+    def mfac(self, fields, fragment, **kwargs):
+        """
+        Multi-field checks for autocomplete.
+        `fields` : Iterable composed of field names to search against
+        `fragment`: The term sought
+        
+        """
+        clone = self._clone()
+        query_bits = []
+
+        for field in fields:
+            subqueries = []
+            for word in fragment.split(' '):
+                bit = clone.query.clean(word.strip())
+                kwargs = {field: word}
+                subqueries.append(SQ(**kwargs))
+            query_bits.append(reduce(operator.and_, subqueries))
+
+        return clone.filter(reduce(operator.or_, query_bits))
+                
     def autocomplete(self, **kwargs):
         """
         A shortcut method to perform an autocomplete search.
