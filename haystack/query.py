@@ -461,12 +461,13 @@ class SearchQuerySet(object):
         """
         clone = self._clone()
         query_bits = []
+        lookup = kwargs.get('lookup', '')
 
         for field in fields:
             subqueries = []
             for word in fragment.split(' '):
                 bit = clone.query.clean(word.strip())
-                kwargs = {field: word}
+                kwargs = {field + lookup: word}
                 subqueries.append(SQ(**kwargs))
             query_bits.append(reduce(operator.and_, subqueries))
 
