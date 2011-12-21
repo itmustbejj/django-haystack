@@ -138,7 +138,11 @@ class SolrSearchBackend(BaseSearchBackend):
 
         if highlight is True:
             kwargs['hl'] = 'true'
-            kwargs['hl.fragsize'] = '200'
+            kwargs['hl.fragsize'] = '100'
+            kwargs['hl.snippets'] = '2'
+            kwargs['hl.mergeContiguous'] = 'true'
+            kwargs['hl.simple.pre'] = '<b>'
+            kwargs['hl.simple.post'] = '</b>'
 
         if self.include_spelling is True:
             kwargs['spellcheck'] = 'true'
