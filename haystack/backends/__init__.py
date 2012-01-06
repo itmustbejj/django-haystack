@@ -661,6 +661,9 @@ class BaseSearchQuery(object):
     def set_facet_offset(self, offset):
         self.facet_offset = offset
 
+    def set_facet_mincount(self, mincount):
+        self.facet_mincount = mincount
+
     def clear_order_by(self):
         """
         Clears out all ordering that has been already added, reverting the
