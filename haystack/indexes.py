@@ -218,6 +218,17 @@ class SearchIndex(object):
         if self.should_update(instance, **kwargs):
             self._get_backend(using).update(self, [instance])
 
+    def update_objects(self, items_to_update, using=None):
+        """
+        Updates a subset of items in the index..
+
+        If ``using`` is provided, it specifies which connection should be
+        used. Default relies on the routers to decide which backend should
+        be used.
+        """
+        self._get_backend(using).update(self, items_to_update)
+
+
     def remove_object(self, instance, using=None, **kwargs):
         """
         Remove an object from the index. Attached to the class's
