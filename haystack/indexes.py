@@ -229,6 +229,17 @@ class SearchIndex(object):
         """
         self._get_backend(using).remove(instance)
 
+    def remove_objects(self, query, using=None, **kwargs):
+        """
+        Remove objects matching a particular query from the index. Attached
+        to the class's post-delete hook.
+
+        If ``using`` is provided, it specifies which connection should be
+        used. Default relies on the routers to decide which backend should
+        be used.
+        """
+        self._get_backend(using).remove(query)
+
     def clear(self, using=None):
         """
         Clears the entire index.

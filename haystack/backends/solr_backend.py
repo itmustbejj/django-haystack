@@ -83,6 +83,20 @@ class SolrSearchBackend(BaseSearchBackend):
 
             self.log.error("Failed to remove document '%s' from Solr: %s", solr_id, e)
 
+    def bulk_remove(self, query, commit=True):
+
+        try:
+            kwargs = {
+                'commit': commit,
+                'q': query
+            }
+            self.conn.delete(**kwargs)
+        except (IOError, SolrError), e:
+            if not self.silently_fail:
+                raise
+
+            self.log.error("Failed to remove documents matching query '%s' from Solr: %s", query, e)
+
     def clear(self, models=[], commit=True):
         try:
             if not models:
