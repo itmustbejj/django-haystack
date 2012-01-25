@@ -249,7 +249,7 @@ class SearchIndex(object):
         used. Default relies on the routers to decide which backend should
         be used.
         """
-        self._get_backend(using).remove(query)
+        self._get_backend(using).bulk_remove(query)
 
     def clear(self, using=None):
         """
